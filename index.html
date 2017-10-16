@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+
+    <title>参考答案条形码生成器</title>
+    <link rel="stylesheet" href="./css/wx.css">
+    <link rel="stylesheet" href="./css/style.css">
+
+</head>
+<body>
+<div class="container" id="content">
+    <div class="page">
+        <div class="header">
+            <h1 class="pageTitle green" id="Name">条形码</h1>
+            <p class="pageSecondTitle">一种好的ABCD转成条形码的实现方案</p>
+        </div>
+        <div class="content">
+            <div class="weui-cells " style="text-align: center">
+                <div style="display: inline-block" id="preview">
+                <canvas id="myCanvas" width="300" height="120" ></canvas>
+                </div>
+                
+                <img src="" alt="等图ing···" id="final" style="display: none"/>
+            </div>
+            <div class="weui-cells weui-cells_form">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <textarea class="weui-textarea" placeholder="输入参考答案" rows="3" id="text"></textarea>
+                        <!--<div class="weui-textarea-counter"><span>0</span>/20</div>-->
+                    </div>
+                </div>
+            </div>
+            <article class="weui-article" style="padding-bottom: 0">
+                <section>
+                    <h2 class="title">操作指引</h2>
+                    <section style="color: #3cc51f;">
+                        <h3>1. 首先，你需要看看《天才枪手》这部电影</h3>
+                        <h3>2. 然后，你就知道我在说什么了</h3>
+                        <h3>3. 接着，你就知道这样做方便多了</h3>
+                    </section>
+                </section>
+            </article>
+            <div class="weui-btn-area">
+                <!--weui-btn_disabled-->
+                <a class="weui-btn weui-btn_primary " href="javascript:" id="sure">生成条形码</a>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+<!--<input type="text" id="text"/>
+<button type="button" id="sure">生成</button>
+<img src="" alt="等图ing···" id="final"/>-->
+
+<!-- <script src="js/jquery-1.11.2.min.js"></script> -->
+<script>
+    var Emoji = {
+        isEdit: true,
+        init () {
+            var self = this ;
+            var Timer;
+            var canvas = document.getElementById('myCanvas');
+            var ctx = canvas.getContext("2d");
+
+            // 实时输入预览
+            var $text = document.getElementById('text');
+            $text.addEventListener('input', function () {
+                (!self.isEdit) && self.hidePic();
+                Timer && clearTimeout(Timer);
+                Timer = setTimeout(function () {
+                    var text = $text.value;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    self.transAnswer(text, ctx);
+                }, 300)
+
+            })
+            var $sure = document.getElementById('sure');
+            $sure.addEventListener('click', function () {
+                var src = self.convertCanvasToImage(canvas).src;
+                document.getElementById('final').src = src;
+                self.ShowPic();
+            })
+
+        },
+        // 切换画布和图片的显示
+        ShowPic () {
+            this.isEdit = false ;
+            var $sure = document.getElementById('sure')
+            $sure.classList.add('weui-btn_disabled')
+            $sure.innerText = '输入以重新生成条形码';
+            document.getElementById('preview').style.display = 'none';
+            document.getElementById('final').style.display = 'block';
+        },
+        hidePic () {
+            this.isEdit = true ;
+            var $sure = document.getElementById('sure')
+            $sure.classList.remove('weui-btn_disabled')
+            $sure.innerText = '生成条形码';
+            document.getElementById('preview').style.display = 'block';
+            document.getElementById('final').style.display = 'none';
+        },
+        // 将答案转化成矩形
+        transAnswer(text, ctx) {
+                var str = text.replace(/[^abcdABCD]/g, '');
+                var len = str.length;
+                for (var i = 0; i < len; i++) {
+                        ctx.beginPath();
+                        ctx.lineWidth = (str[i].toLowerCase().charCodeAt() - 97) * 1.5 + 1;                        
+                        ctx.moveTo(10 + i * 7, 10);
+                        ctx.lineTo(10 + i * 7, 110);
+                        ctx.stroke();
+                }
+        },
+        // canvas转化成图片
+        convertCanvasToImage (canvas) {
+            var image = new Image();
+            image.src = canvas.toDataURL("image/png");
+            return image;
+        }
+    }
+    window.onload = function () {
+        Emoji.init();
+    }
+
+</script>
+<script>
+    // 以320 宽度规划页面
+    ;(function (doc, win) {
+        var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var size = 20;
+                    var clientWidth = Math.min(Math.max(320,docEl.clientWidth),640);
+                    if (!clientWidth) return;
+                    docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+                };
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+</body>
+</html>
